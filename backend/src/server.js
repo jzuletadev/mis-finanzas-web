@@ -29,6 +29,10 @@ app.use('/users', require('./routes/users'));
 app.use('/accounts', cookieJwtAuth, require('./routes/accounts'));
 // cards routes
 app.use('/cards', cookieJwtAuth, require('./routes/cards'));
+// transactions routes
+app.use('/transactions', cookieJwtAuth, require('./routes/transactions'));
+// catalogs routes (categories, types)
+app.use('/catalogs', cookieJwtAuth, require('./routes/catalogs'));
 
 app.listen(8080, () => {
     logger.info('MyServer is running on port 8080');

@@ -15,7 +15,5 @@ EXPOSE 8080
 
 CMD ["node", "src/server.js"]
 
-#docker build --platform=linux/amd64 -t us-central1-docker.pkg.dev/temporal-falcon-473902-n9/bsm-repo/bsm-backend:latest .
-#docker push us-central1-docker.pkg.dev/temporal-falcon-473902-n9/bsm-repo/bsm-backend:latest
-
-#gcloud run deploy bsm-server --image us-central1-docker.pkg.dev/temporal-falcon-473902-n9/bsm-repo/bsm-backend:latest --platform managed --region us-central1 --quiet
+#docker buildx build --platform linux/amd64,linux/arm64 -t jzuletadev/mf-backend:latest .
+#docker push jzuletadev/mf-backend:latest

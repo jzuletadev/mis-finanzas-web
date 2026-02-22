@@ -38,38 +38,17 @@ CREATE TABLE IF NOT EXISTS cards (
 );
 
 -- Tipos de transacción
-CREATE TABLE IF NOT EXISTS transaction_types (
+CREATE TABLE IF NOT EXISTS types (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL
 );
 
--- Insertamos valores básicos
-INSERT INTO transaction_types (name) VALUES
-('INGRESO'),
-('GASTO'),
-('RETIRO_CAJERO'),
-('PAGO_TARJETA'),
-('TRANSFERENCIA');
-
--- Categorías
+-- Categorías de transacción
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     type ENUM('INGRESO','GASTO') NOT NULL
 );
-
--- Insertamos categorías básicas para ejemplo
-INSERT INTO categories (name, type) VALUES
-('Salario', 'INGRESO'),
-('Freelance', 'INGRESO'),
-('Alquiler', 'GASTO'),
-('Comida', 'GASTO'),
-('Transporte', 'GASTO'),
-('Entretenimiento', 'GASTO'),
-('Subscripciones', 'GASTO'),
-('Educación', 'GASTO'),
-('Salud', 'GASTO');
-
 
 -- Transacciones
 CREATE TABLE IF NOT EXISTS transactions (
@@ -77,7 +56,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     user_id CHAR(36) NOT NULL,
     account_id CHAR(36),
     card_id CHAR(36),
-    transaction_type_id INT NOT NULL,
+    type_id INT NOT NULL,
     category_id INT,
     amount DECIMAL(15,2) NOT NULL,
     description VARCHAR(255),
@@ -86,7 +65,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (account_id) REFERENCES accounts(id),
     FOREIGN KEY (card_id) REFERENCES cards(id),
-    FOREIGN KEY (transaction_type_id) REFERENCES transaction_types(id),
+    FOREIGN KEY (type_id) REFERENCES types(id),
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
