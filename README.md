@@ -238,6 +238,7 @@ docker network create mis_finanzas_network
 ```bash
 docker run -d \
   --name mysql \
+  --restart=always \ #Reinicia automáticamente si el contenedor falla o la máquina se reinicia
   --network mis_finanzas_network \
   -e MYSQL_ROOT_PASSWORD=secure_pass \
   -e MYSQL_DATABASE=mis_finanzas_db \
@@ -280,6 +281,7 @@ JWT_REFRESH_EXPIRATION=1d
 ```bash
 docker run -d \
   --name mf-backend \
+  --restart=always \
   --network mis_finanzas_network \
   -e DB_HOST=mysql \
   -e DB_USER=root \
@@ -321,11 +323,12 @@ Si todo está funcionando, deberías recibir una respuesta indicando que el back
 
 La imagen ya fue construida con `VITE_API_BASE_URL=/api` (valor baked en build time). Nginx escucha en el puerto 80 y hace proxy de todas las peticiones `/api/*` hacia `http://mf-backend:8080`, resolviendo `mf-backend` por nombre de contenedor dentro de la red Docker. Por eso **es obligatorio** que ambos contenedores estén en `mis_finanzas_network`.
 
-> **No** pases `-e VITE_API_BASE_URL=...` en tiempo de ejecución — es una variable de Vite que se resuelve en build time y no tiene efecto en runtime.
+> **No** es neceario pasa `-e VITE_API_BASE_URL=...` en tiempo de ejecución — es una variable de Vite que se resuelve en build time y no tiene efecto en runtime.
 
 ```bash
 docker run -d \
   --name mf-frontend \
+  --restart=always \
   --network mis_finanzas_network \
   -p 80:80 \
   jzuletadev/mf-frontend:latest
@@ -358,6 +361,15 @@ Si la respuesta viene del backend (ej. JSON con error de autenticación o respue
 ```
 Navegador → nginx:80/api/* → (rewrite: elimina /api) → mf-backend:8080/*
 ```
+
+### Paso 12: Verificar que los contenedores se reinicien automáticamente al reiniciar la máquina
+
+```bash
+docker update --restart=always mysql
+docker update --restart=always mf-backend
+docker update --restart=always mf-frontend
+```
+
 
 
 
