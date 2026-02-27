@@ -271,14 +271,9 @@ docker run -d \
   -e DB_PASSWORD=secure_pass \
   -e DB_NAME=mis_finanzas_db \
   -e DB_PORT=3306 \
-  -e NODE_ENV=development \
   -e FRONTEND_URL=http://localhost:5173 \
-  -e JWT_SECRET=my_jwt_secret_key \
-  -e JWT_REFRESH_SECRET=my_jwt_refresh_secret_key \
-  -e JWT_EXPIRATION=1h \
-  -e JWT_REFRESH_EXPIRATION=1d \
   -p 8080:8080 \
-  jzuletadev/mf-backend:latest
+  jzuletadev/mf-backend:arm64
 ```
 
 ### Paso 5: Verificar que ambos contenedores estén corriendo
@@ -314,7 +309,7 @@ docker run -d \
   --restart=always \
   --network mis_finanzas_network \
   -p 80:80 \
-  jzuletadev/mf-frontend:latest
+  jzuletadev/mf-frontend:arm64
 ```
 
 ### Paso 9: Verificar que el frontend esté corriendo

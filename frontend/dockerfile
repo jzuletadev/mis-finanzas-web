@@ -19,6 +19,5 @@ EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
 
-#Para construir la imagen:
-#docker buildx build --platform linux/amd64,linux/arm64 -t jzuletadev/mf-frontend:latest .
-#docker push jzuletadev/mf-frontend:latest
+# docker build --platform=linux/arm64 -t jzuletadev/mf-frontend:arm64 --push .
+# docker build --platform=linux/amd64 -t jzuletadev/mf-frontend:amd64 --push .
