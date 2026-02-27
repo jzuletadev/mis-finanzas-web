@@ -350,38 +350,43 @@ const StyledWrapper = styled.div`
     }
   }
 
-  /* Responsive Design */
-  @media (max-width: 1024px) and (min-width: 769px) {
-    .login-container {
-      margin-top: 8vh; /* Margen moderado para tablets grandes */
-    }
-  }
-
+  /* ────── Mobile (max 768px) ────── */
   @media (max-width: 768px) {
-    min-height: 100vh;
+    min-height: 100dvh;
     align-items: flex-start;
-    padding: 20px 16px;
-    
+    padding: 0;
+
     .login-container {
-      margin-top: 10vh; /* Posicionar formulario más arriba */
+      max-width: 100%;
+      margin-top: 8vh;
+      padding: 0 16px;
     }
 
     .login-card {
-      padding: 36px 28px;
+      padding: 28px 22px;
       border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
     }
 
     .company-name {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
     }
 
     .company-subtitle {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
 
     .login-image {
-      width: 100px;
-      height: 100px;
+      width: 90px;
+      height: 90px;
+    }
+
+    .login-form {
+      gap: 8px;
+    }
+
+    .form-label {
+      font-size: 0.82rem;
     }
 
     .form-input {
@@ -394,40 +399,17 @@ const StyledWrapper = styled.div`
       font-size: 0.95rem;
     }
 
-    .password-toggle {
-      right: 14px;
-      font-size: 0.75rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    padding: 16px 12px;
-    
-    .login-container {
-      margin-top: 5vh; /* Menos margen en móviles pequeños */
+    .checkbox-container {
+      margin-top: 6px;
     }
 
-    .login-card {
-      padding: 28px 24px;
+    .checkbox-label {
+      font-size: 0.8rem;
     }
 
-    .company-name {
-      font-size: 2.2rem;
+    .login-footer {
+      margin-top: 4px;
     }
-
-    .login-image {
-      width: 90px;
-      height: 90px;
-    }
-
-    .login-form {
-      gap: 20px;
-    }
-
-    .form-group {
-      gap: 6px;
-    }
-
   }
 `
 

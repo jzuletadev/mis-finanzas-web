@@ -260,24 +260,6 @@ docker exec -it mysql mysql -u root -p
 
 ### Paso 4: Desplegar el backend en la misma red
 
-Tomando en cuenta el `env`
-```
-DB_IP_TYPE=PUBLIC
-DB_HOST=mysql.jzuletadev.com #conexion local
-DB_USER=root
-DB_PASSWORD=N@mylov3
-DB_NAME=my_finance_db
-DB_PORT=3306
-
-NODE_ENV=development
-FRONTEND_URL=http://localhost:5173
-
-JWT_SECRET=my_jwt_secret_key
-JWT_REFRESH_SECRET=my_jwt_refresh_secret_key
-JWT_EXPIRATION=1h
-JWT_REFRESH_EXPIRATION=1d
-```
-
 ```bash
 docker run -d \
   --name mf-backend \
@@ -355,21 +337,5 @@ Si el frontend se despliega correctamente, deberías ver el HTML de tu aplicaci�
 # Nginx debe redirigir /api/auth/validate → mf-backend:8080/auth/validate
 curl http://localhost/api/auth/validate
 ```
-
-Si la respuesta viene del backend (ej. JSON con error de autenticación o respuesta de validación), el proxy está funcionando correctamente. Flujo completo:
-
-```
-Navegador → nginx:80/api/* → (rewrite: elimina /api) → mf-backend:8080/*
-```
-
-### Paso 12: Verificar que los contenedores se reinicien automáticamente al reiniciar la máquina
-
-```bash
-docker update --restart=always mysql
-docker update --restart=always mf-backend
-docker update --restart=always mf-frontend
-```
-
-
 
 
