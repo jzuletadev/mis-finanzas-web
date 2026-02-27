@@ -35,6 +35,22 @@ router.get('/user/:userId', async (req, res) => {
     }
 });
 
+// PUT /cards/:cardId  -> actualizar nombre/límite/vigencia/corte de tarjeta
+router.put('/:cardId', async (req, res) => {
+    try {
+        logger.info('PUT /cards/:cardId called');
+        const cardId = req.params.cardId;
+        const { card_name, credit_limit, expiry_date, cut_off_day } = req.body || {};
+        await cardService.updateCard({ id: cardId, card_name, credit_limit, expiry_date, cut_off_day });
+        return responseHandler.success(res, { message: 'Tarjeta actualizada' });
+    } catch (err) {
+        logger.error('Error al actualizar tarjeta', err);
+        const known = ['id es requerido', 'Sin campos para actualizar', 'expiry_date debe tener formato', 'cut_off_day debe ser'];
+        if (known.some(m => err.message?.includes(m))) return responseHandler.badRequest(res, err.message);
+        return responseHandler.error(res, 'Error interno del servidor');
+    }
+});
+
 // DELETE /cards/:cardId  -> eliminar tarjeta por ID
 router.delete('/:cardId', async (req, res) => {
     try {

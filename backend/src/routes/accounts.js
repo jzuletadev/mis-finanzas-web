@@ -35,6 +35,22 @@ router.get('/user/:userId', async (req, res) => {
     }
 });
 
+// PUT /accounts/:accountId  -> actualizar nombre/tipo de cuenta
+router.put('/:accountId', async (req, res) => {
+    try {
+        logger.info('PUT /accounts/:accountId called');
+        const accountId = req.params.accountId;
+        const { account_name, account_type } = req.body || {};
+        await accountService.updateAccount({ id: accountId, account_name, account_type });
+        return responseHandler.success(res, { message: 'Cuenta actualizada' });
+    } catch (err) {
+        logger.error('Error al actualizar cuenta', err);
+        const known = ['id es requerido', 'Sin campos para actualizar'];
+        if (known.some(m => err.message?.includes(m))) return responseHandler.badRequest(res, err.message);
+        return responseHandler.error(res, 'Error interno del servidor');
+    }
+});
+
 // DELETE /accounts/:accountId  -> eliminar cuenta por ID
 router.delete('/:accountId', async (req, res) => {
     try {

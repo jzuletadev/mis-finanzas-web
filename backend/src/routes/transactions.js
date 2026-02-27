@@ -33,6 +33,13 @@ router.post('/create', async (req, res) => {
             'Categoría no encontrada',
             'Tipo de transacción no encontrado',
             'account_id, amount y type_id son requeridos',
+            'card_id es requerido para compras con tarjeta',
+            'card_id es requerido para pago de tarjeta',
+            'La tarjeta no pertenece a la cuenta seleccionada',
+            'La cuenta seleccionada no corresponde a la cuenta asociada a la tarjeta',
+            'El monto supera el saldo pendiente de la tarjeta',
+            'El monto a pagar debe ser mayor a 0',
+            'Solo se pueden pagar tarjetas de crédito',
         ];
         const isBusinessError = knownErrors.some(msg => err.message?.includes(msg));
         if (isBusinessError) {

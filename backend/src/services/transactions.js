@@ -4,14 +4,14 @@ const { v4: uuidv4 } = require('uuid');
 
 // 
 
-// Pago de deuda de tarjeta de crédito
-async function payCreditCard({ user_id, card_id }) {
+// Pago de deuda de tarjeta de crédito (total o parcial)
+async function payCreditCard({ user_id, card_id, amount }) {
     if (!card_id) {
         throw new Error('card_id es requerido');
     }
 
     const pool = await getPool();
-    // Verificar que la tarjeta exista y tenga saldo pendiente
+    // Verificar que la tarjeta exista, sea de crédito y tenga saldo pendiente
     const [cardRows] = await pool.query(
         `SELECT * FROM cards WHERE id = ? AND user_id = ?`,
         [card_id, user_id]
@@ -21,11 +21,28 @@ async function payCreditCard({ user_id, card_id }) {
     }
 
     const card = cardRows[0];
+
+    if (card.card_type !== 'CREDITO') {
+        throw new Error('Solo se pueden pagar tarjetas de crédito');
+    }
+
     if (card.current_balance <= 0) {
         throw new Error('No hay saldo pendiente en la tarjeta');
     }
 
-    // verificar que la cuenta asociada tenga suficiente balance para pagar la deuda
+    // Determinar el monto a pagar: si se provee amount se hace pago parcial, si no, pago total
+    const amountToPay = amount !== undefined && amount !== null
+        ? parseFloat(amount)
+        : card.current_balance;
+
+    if (amountToPay <= 0) {
+        throw new Error('El monto a pagar debe ser mayor a 0');
+    }
+    if (amountToPay > card.current_balance) {
+        throw new Error('El monto supera el saldo pendiente de la tarjeta');
+    }
+
+    // verificar que la cuenta asociada exista y tenga suficiente balance
     const [accountRows] = await pool.query(
         `SELECT * FROM accounts WHERE id = ? AND user_id = ?`,
         [card.account_id, user_id]
@@ -36,21 +53,23 @@ async function payCreditCard({ user_id, card_id }) {
     }
 
     const account = accountRows[0];
-    if (account.balance < card.current_balance) {
+    if (account.balance < amountToPay) {
         throw new Error('Saldo insuficiente en la cuenta para pagar la deuda');
     }
 
-    // Actualizar el balance de la cuenta restando el monto de la deuda
+    // Actualizar el balance de la cuenta restando el monto pagado
     await pool.query(
         `UPDATE accounts SET balance = balance - ? WHERE id = ?`,
-        [card.current_balance, card.account_id]
+        [amountToPay, card.account_id]
     );
 
-    // Actualizar el balance de la tarjeta a 0
+    // Reducir el balance de la tarjeta en el monto pagado
     await pool.query(
-        `UPDATE cards SET current_balance = 0 WHERE id = ?`,
-        [card_id]
+        `UPDATE cards SET current_balance = current_balance - ? WHERE id = ?`,
+        [amountToPay, card_id]
     );
+
+    return { amountPaid: amountToPay, linkedAccountId: card.account_id };
 }
 
 // Ingreso a la cuenta (INGRESOS - Sueldos, ingresos por ventas, otros ingresos, etc.)
@@ -195,9 +214,14 @@ async function createTransaction({ user_id, account_id, card_id, type_id, catego
 
     } else if (categoryType === 'GASTO') {
         if (typeName === 'COMPRA_TARJETA') {
-            // verificar si es de credito o debito
+            // card_id es obligatorio para compras con tarjeta
+            if (!card_id) {
+                throw new Error('card_id es requerido para compras con tarjeta');
+            }
+
+            // Obtener la tarjeta con su cuenta asociada
             const [cardRows] = await pool.query(
-                `SELECT card_type FROM cards WHERE id = ? AND user_id = ?`,
+                `SELECT card_type, account_id FROM cards WHERE id = ? AND user_id = ?`,
                 [card_id, user_id]
             );
 
@@ -205,14 +229,46 @@ async function createTransaction({ user_id, account_id, card_id, type_id, catego
                 throw new Error('Tarjeta no encontrada');
             }
 
-            const cardType = cardRows[0].card_type;
-            if (cardType === 'DEBITO') {
-                await payWithDebitCard({ user_id, account_id, amount });
+            const cardData = cardRows[0];
+
+            // Validar que la tarjeta pertenezca a la cuenta/banco seleccionado
+            if (cardData.account_id !== account_id) {
+                throw new Error('La tarjeta no pertenece a la cuenta seleccionada');
+            }
+
+            if (cardData.card_type === 'DEBITO') {
+                // Para débito se descuenta de la cuenta vinculada a la tarjeta
+                await payWithDebitCard({ user_id, account_id: cardData.account_id, amount });
             } else {
+                // Para crédito se incrementa el saldo de la tarjeta
                 await payWithCreditCard({ user_id, card_id, amount });
             }
+
         } else if (typeName === 'PAGO_TARJETA') {
-            await payCreditCard({ user_id, account_id, amount });
+            // card_id es obligatorio para pago de tarjeta
+            if (!card_id) {
+                throw new Error('card_id es requerido para pago de tarjeta');
+            }
+
+            // Obtener la cuenta asociada a la tarjeta para validar que coincida
+            const [cardForPayment] = await pool.query(
+                `SELECT account_id, card_type FROM cards WHERE id = ? AND user_id = ?`,
+                [card_id, user_id]
+            );
+            if (cardForPayment.length === 0) {
+                throw new Error('Tarjeta no encontrada');
+            }
+
+            // La cuenta enviada debe coincidir con la cuenta vinculada a la tarjeta de crédito
+            if (cardForPayment[0].account_id !== account_id) {
+                throw new Error('La cuenta seleccionada no corresponde a la cuenta asociada a la tarjeta');
+            }
+
+            // BUG FIX: se pasa card_id (antes se pasaba account_id por error)
+            const payResult = await payCreditCard({ user_id, card_id, amount });
+            // Usar el monto real pagado para registrar la transacción correctamente
+            amount = payResult.amountPaid;
+
         } else {
             await expense({ user_id, from_account_id: account_id, amount });
         }

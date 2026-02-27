@@ -29,6 +29,19 @@ async function getAccountsByUserId(user_id) {
     return rows;
 }
 
+// Actualiza nombre y tipo de una cuenta
+async function updateAccount({ id, account_name, account_type }) {
+    if (!id) throw new Error('id es requerido');
+    const fields = [];
+    const values = [];
+    if (account_name !== undefined) { fields.push('account_name = ?'); values.push(account_name); }
+    if (account_type !== undefined) { fields.push('account_type = ?'); values.push(account_type); }
+    if (fields.length === 0) throw new Error('Sin campos para actualizar');
+    values.push(id);
+    const pool = await getPool();
+    await pool.query(`UPDATE accounts SET ${fields.join(', ')} WHERE id = ?`, values);
+}
+
 // Elimina una cuenta por su ID
 async function deleteAccount(account_id) {
     const pool = await getPool();
@@ -41,5 +54,6 @@ async function deleteAccount(account_id) {
 module.exports = {
     createAccount,
     getAccountsByUserId,
+    updateAccount,
     deleteAccount
 };

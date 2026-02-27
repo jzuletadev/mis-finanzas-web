@@ -23,17 +23,17 @@ INSERT INTO categories (name, type) VALUES
 ('Restaurantes', 'GASTO'),
 -- Gastos - Transporte
 ('Gasolina', 'GASTO'),
-('Transporte Público', 'GASTO'),
+('Transporte Publico', 'GASTO'),
 ('Uber/Taxi', 'GASTO'),
-('Mantenimiento Vehículo', 'GASTO'),
+('Mantenimiento Vehiculo', 'GASTO'),
 -- Gastos financieros
-('Pago Tarjeta Crédito', 'GASTO'),
-('Préstamos', 'GASTO'),
+('Pago Tarjeta Credito', 'GASTO'),
+('Prestamos', 'GASTO'),
 -- Gastos estilo de vida`
 ('Suscripciones', 'GASTO'),
 ('Ropa', 'GASTO'),
-('Tecnología', 'GASTO'),
+('Tecnologia', 'GASTO'),
 -- Gastos personales
 ('Salud', 'GASTO'),
-('Educación', 'GASTO'),
+('Educacion', 'GASTO'),
 ('Otros Gastos', 'GASTO');

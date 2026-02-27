@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 
-const ButtonMenu = ({ onNewIncome, onNewExpense, onLogout }) => {
+const ButtonMenu = ({ onNewIncome, onNewExpense, onNewAccount, onNewCard, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -42,6 +42,15 @@ const ButtonMenu = ({ onNewIncome, onNewExpense, onLogout }) => {
           <button className="dropdown-item expense" onClick={() => handleAction(onNewExpense)}>
             <span className="item-icon">-</span>
             Nuevo Gasto
+          </button>
+          <div className="dropdown-divider" />
+          <button className="dropdown-item account" onClick={() => handleAction(onNewAccount)}>
+            <span className="item-icon">🏦</span>
+            Nueva Cuenta
+          </button>
+          <button className="dropdown-item card" onClick={() => handleAction(onNewCard)}>
+            <span className="item-icon">💳</span>
+            Nueva Tarjeta
           </button>
           <div className="dropdown-divider" />
           <button className="dropdown-item logout" onClick={() => handleAction(onLogout)}>
@@ -160,6 +169,26 @@ const StyledWrapper = styled.div`
   .dropdown-item.logout:hover {
     background: #fef2f2;
     color: #dc2626;
+  }
+
+  .dropdown-item.account:hover {
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+
+  .dropdown-item.card:hover {
+    background: #f5f3ff;
+    color: #5b21b6;
+  }
+
+  .account .item-icon {
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .card .item-icon {
+    background: #ede9fe;
+    color: #5b21b6;
   }
 
   .item-icon {

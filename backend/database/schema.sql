@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS cards (
     card_name VARCHAR(100),
     credit_limit DECIMAL(15,2),
     current_balance DECIMAL(15,2) DEFAULT 0.00,
-    due_date DATE,
+    expiry_date VARCHAR(5),       -- Vigencia de la tarjeta en formato MM/YY (ej: 11/35)
+    cut_off_day TINYINT,          -- Día de corte mensual (1-31), solo para tarjetas de crédito
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(id),

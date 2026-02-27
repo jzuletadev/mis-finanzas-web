@@ -64,6 +64,23 @@ const TransactionForm = ({ isOpen, onClose, type, userId, accounts, cards, onSuc
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === 'card_id') {
+      const chosenCard = cards.find(c => c.id === value);
+      const typeName = types.find(t => t.id === parseInt(formData.type_id))?.name;
+
+      // Para compra con tarjeta débito o pago de tarjeta de crédito,
+      // fijar automáticamente la cuenta vinculada a la tarjeta
+      if (
+        chosenCard?.account_id &&
+        (typeName === 'PAGO_TARJETA' ||
+          (typeName === 'COMPRA_TARJETA' && chosenCard?.card_type === 'DEBITO'))
+      ) {
+        setFormData(prev => ({ ...prev, card_id: value, account_id: chosenCard.account_id }));
+        return;
+      }
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -81,6 +98,10 @@ const TransactionForm = ({ isOpen, onClose, type, userId, accounts, cards, onSuc
     }
     if (!formData.category_id) {
       return swal('Error', 'Selecciona una categoría', 'error');
+    }
+    const selectedTypeName = types.find(t => t.id === parseInt(formData.type_id))?.name;
+    if ((selectedTypeName === 'COMPRA_TARJETA' || selectedTypeName === 'PAGO_TARJETA') && !formData.card_id) {
+      return swal('Error', 'Selecciona una tarjeta para este tipo de transacción', 'error');
     }
 
     setSubmitting(true);
@@ -114,9 +135,16 @@ const TransactionForm = ({ isOpen, onClose, type, userId, accounts, cards, onSuc
     }
   };
 
-  // Check if selected type is COMPRA_TARJETA to show card selector
+  // Mostrar selector de tarjeta para COMPRA_TARJETA y PAGO_TARJETA
   const selectedType = types.find(t => t.id === parseInt(formData.type_id));
-  const showCardSelector = selectedType?.name === 'COMPRA_TARJETA';
+  const showCardSelector = selectedType?.name === 'COMPRA_TARJETA' || selectedType?.name === 'PAGO_TARJETA';
+  // Para débito en COMPRA_TARJETA y para PAGO_TARJETA la cuenta queda bloqueada a la vinculada a la tarjeta
+  const selectedCard = cards.find(c => c.id === formData.card_id);
+  const accountIsLockedByCard =
+    showCardSelector &&
+    selectedCard?.account_id &&
+    (selectedType?.name === 'PAGO_TARJETA' ||
+      (selectedType?.name === 'COMPRA_TARJETA' && selectedCard?.card_type === 'DEBITO'));
 
   if (!isOpen) return null;
 
@@ -134,12 +162,14 @@ const TransactionForm = ({ isOpen, onClose, type, userId, accounts, cards, onSuc
           <form onSubmit={handleSubmit}>
             <div className="form-grid">
               <div className="form-group">
-                <label>Cuenta *</label>
+                <label>Cuenta *{accountIsLockedByCard && ' (vinculada a la tarjeta)'}</label>
                 <select
                   name="account_id"
                   value={formData.account_id}
                   onChange={handleChange}
                   required
+                  disabled={!!accountIsLockedByCard}
+                  style={accountIsLockedByCard ? { opacity: 0.7, cursor: 'not-allowed' } : {}}
                 >
                   <option value="">Seleccionar cuenta...</option>
                   {accounts.map(acc => (
