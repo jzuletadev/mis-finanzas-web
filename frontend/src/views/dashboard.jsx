@@ -541,7 +541,6 @@ const Dashboard = () => {
                 <h2>Cuentas</h2>
                 <div className="section-header-actions">
                   <span className="count">({accounts.length})</span>
-                  <button className="btn-add" onClick={handleOpenNewAccount}>+ Nueva Cuenta</button>
                 </div>
               </div>
               <div className="accounts-grid">
@@ -591,7 +590,6 @@ const Dashboard = () => {
                 <h2>Tarjetas</h2>
                 <div className="section-header-actions">
                   <span className="count">({cards.length})</span>
-                  <button className="btn-add" onClick={handleOpenNewCard}>+ Nueva Tarjeta</button>
                 </div>
               </div>
               <div className="cards-grid">

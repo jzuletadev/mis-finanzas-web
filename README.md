@@ -238,12 +238,13 @@ docker network create mis_finanzas_network
 ```bash
 docker run -d \
   --name mysql \
-  --restart=always \ #Reinicia automáticamente si el contenedor falla o la máquina se reinicia
+  --restart=always \
   --network mis_finanzas_network \
   -e MYSQL_ROOT_PASSWORD=secure_pass \
   -e MYSQL_DATABASE=mis_finanzas_db \
   -p 3306:3306 \
-  mysql:latest
+  -v mysql_data:/var/lib/mysql \
+  mysql:8.0
 ```
 
 ### Paso 2: Verificar que MySQL esté corriendo

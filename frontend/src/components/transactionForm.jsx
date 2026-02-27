@@ -301,8 +301,14 @@ const FormContainer = styled.div`
   max-width: 540px;
   max-height: 90vh;
   overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
   box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s ease;
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
 
   @keyframes slideUp {
     from { opacity: 0; transform: translateY(20px); }
@@ -378,6 +384,7 @@ const FormContainer = styled.div`
 
   .form-group input,
   .form-group select {
+    width: 100%;
     padding: 10px 14px;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
@@ -460,7 +467,7 @@ const FormContainer = styled.div`
     cursor: not-allowed;
   }
 
-  @media (max-width: 540px) {
+  @media (max-width: 768px) {
     width: 95%;
 
     .form-grid {
@@ -468,11 +475,25 @@ const FormContainer = styled.div`
     }
 
     form {
-      padding: 16px 20px 24px;
+      padding: 16px 18px 22px;
     }
 
     .form-header {
-      padding: 20px 20px 14px;
+      padding: 18px 18px 14px;
+    }
+
+    .form-header h2 {
+      font-size: 1.15rem;
+    }
+
+    .form-actions {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cancel-btn, .submit-btn {
+      width: 100%;
+      text-align: center;
     }
   }
 `;
