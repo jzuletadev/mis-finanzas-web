@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { apiPost, apiPut } from '../utils/api';
+import { ACCOUNT_ARTS } from '../utils/cardArts';
 import swal from 'sweetalert';
 
 /**
@@ -20,6 +21,7 @@ const AccountModal = ({ isOpen, onClose, onSuccess, userId, account }) => {
     account_name: '',
     account_type: 'AHORRO',
     balance: '',
+    account_art: ACCOUNT_ARTS[0].id,
   };
 
   const [form, setForm] = useState(emptyForm);
@@ -32,6 +34,7 @@ const AccountModal = ({ isOpen, onClose, onSuccess, userId, account }) => {
           account_name: account.account_name || '',
           account_type: account.account_type || 'AHORRO',
           balance: '', // no se edita el balance directamente
+          account_art: account.account_art || ACCOUNT_ARTS[0].id,
         });
       } else {
         setForm(emptyForm);
@@ -66,6 +69,7 @@ const AccountModal = ({ isOpen, onClose, onSuccess, userId, account }) => {
         res = await apiPut(`/accounts/${account.id}`, {
           account_name: form.account_name.trim(),
           account_type: form.account_type,
+          account_art: form.account_art,
         });
       } else {
         res = await apiPost('/accounts/create', {
@@ -73,6 +77,7 @@ const AccountModal = ({ isOpen, onClose, onSuccess, userId, account }) => {
           account_name: form.account_name.trim(),
           account_type: form.account_type,
           balance: parseFloat(form.balance),
+          account_art: form.account_art,
         });
       }
 
@@ -116,6 +121,27 @@ const AccountModal = ({ isOpen, onClose, onSuccess, userId, account }) => {
                 className={errors.account_name ? 'error' : ''}
               />
               {errors.account_name && <span className="error-msg">{errors.account_name}</span>}
+            </div>
+
+            <div className="form-group">
+              <label>Arte de la cuenta</label>
+              <div className="art-swatch-row">
+                {ACCOUNT_ARTS.map(art => (
+                  <button
+                    type="button"
+                    key={art.id}
+                    className={`art-swatch ${form.account_art === art.id ? 'selected' : ''}`}
+                    onClick={() => setForm(prev => ({ ...prev, account_art: art.id }))}
+                    title={art.label}
+                  >
+                    <span className="art-swatch-preview" style={{ background: art.colors[0] }}>
+                      <span style={{ background: art.colors[1] }} />
+                      <span style={{ background: art.colors[2] }} />
+                    </span>
+                    <span className="art-swatch-label">{art.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="form-group">
@@ -253,6 +279,50 @@ const ModalContainer = styled.div`
     font-size: 0.8rem;
     color: #ef4444;
     margin-top: 2px;
+  }
+
+  .art-swatch-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .art-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    &:hover { background: #f8fafc; }
+    &.selected {
+      border-color: #3b82f6;
+      background: #eff6ff;
+    }
+  }
+
+  .art-swatch-preview {
+    position: relative;
+    width: 56px;
+    height: 36px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+
+    span:nth-child(1) { position: absolute; width: 30px; height: 30px; border-radius: 50%; top: -10px; right: -10px; opacity: 0.9; }
+    span:nth-child(2) { position: absolute; width: 24px; height: 24px; border-radius: 50%; bottom: -10px; left: -8px; opacity: 0.85; }
+  }
+
+  .art-swatch-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6b7280;
   }
 
   .info-box {

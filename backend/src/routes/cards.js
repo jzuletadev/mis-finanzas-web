@@ -40,12 +40,12 @@ router.put('/:cardId', async (req, res) => {
     try {
         logger.info('PUT /cards/:cardId called');
         const cardId = req.params.cardId;
-        const { card_name, credit_limit, expiry_date, cut_off_day } = req.body || {};
-        await cardService.updateCard({ id: cardId, card_name, credit_limit, expiry_date, cut_off_day });
+        const { card_name, credit_limit, expiry_date, cut_off_day, card_art } = req.body || {};
+        await cardService.updateCard({ id: cardId, card_name, credit_limit, expiry_date, cut_off_day, card_art });
         return responseHandler.success(res, { message: 'Tarjeta actualizada' });
     } catch (err) {
         logger.error('Error al actualizar tarjeta', err);
-        const known = ['id es requerido', 'Sin campos para actualizar', 'expiry_date debe tener formato', 'cut_off_day debe ser'];
+        const known = ['id es requerido', 'Sin campos para actualizar', 'expiry_date debe tener formato', 'cut_off_day debe ser', 'card_art debe ser'];
         if (known.some(m => err.message?.includes(m))) return responseHandler.badRequest(res, err.message);
         return responseHandler.error(res, 'Error interno del servidor');
     }

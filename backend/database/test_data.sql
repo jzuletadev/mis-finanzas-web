@@ -1,11 +1,11 @@
 -- ============================================================
 -- DATOS DE PRUEBA — Mis Finanzas Web
--- Usuario: testuser / Contraseña: Test1234
+-- Usuario: jzuletadev / Contraseña: 123 (guardada como hash bcrypt)
 -- ============================================================
 
 -- ── Usuario ─────────────────────────────────────────────────
 INSERT INTO users (id, username, password) VALUES
-('u0000001-0000-0000-0000-000000000001', 'testuser', '$2b$10$ik85B7ko6p1yuSHMLXUAI.FLRKXWl6F5r9RKuHPDQld8iJFlxjOEO');
+('u0000001-0000-0000-0000-000000000001', 'jzuletadev', '$2a$12$d7ci5qORmbmx5ESW/aMPi.4BELM8ZfYGiuhnGA81SZuGZ6q2sGUvi');
 
 -- ── Cuentas ─────────────────────────────────────────────────
 INSERT INTO accounts (id, user_id, account_name, account_type, balance) VALUES

@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS accounts (
     account_name VARCHAR(100) NOT NULL,
     account_type ENUM('AHORRO','MONETARIA') DEFAULT 'AHORRO',
     balance DECIMAL(15,2) DEFAULT 0.00,
+    account_art VARCHAR(20) NOT NULL DEFAULT 'mint', -- arte visual: mint | lavender | peach
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(id)
@@ -32,6 +33,7 @@ CREATE TABLE IF NOT EXISTS cards (
     current_balance DECIMAL(15,2) DEFAULT 0.00,
     expiry_date VARCHAR(5),       -- Vigencia de la tarjeta en formato MM/YY (ej: 11/35)
     cut_off_day TINYINT,          -- Día de corte mensual (1-31), solo para tarjetas de crédito
+    card_art VARCHAR(20) NOT NULL DEFAULT 'aurora', -- arte visual: aurora | sunset | ocean
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(id),

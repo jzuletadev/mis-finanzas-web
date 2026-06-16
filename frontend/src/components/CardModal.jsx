@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { apiPost, apiPut } from '../utils/api';
+import { CARD_ARTS } from '../utils/cardArts';
 import swal from 'sweetalert';
 
 /**
@@ -26,6 +27,7 @@ const CardModal = ({ isOpen, onClose, onSuccess, userId, accounts, card }) => {
     expiry_month: '',
     expiry_year: '',
     cut_off_day: '',
+    card_art: CARD_ARTS[0].id,
   };
 
   const [form, setForm] = useState(emptyForm);
@@ -44,6 +46,7 @@ const CardModal = ({ isOpen, onClose, onSuccess, userId, accounts, card }) => {
           expiry_month: em || '',
           expiry_year: ey || '',
           cut_off_day: card.cut_off_day ?? '',
+          card_art: card.card_art || CARD_ARTS[0].id,
         });
       } else {
         setForm({
@@ -119,7 +122,7 @@ const CardModal = ({ isOpen, onClose, onSuccess, userId, accounts, card }) => {
         : null;
 
       if (isEdit) {
-        const payload = { card_name: form.card_name.trim() };
+        const payload = { card_name: form.card_name.trim(), card_art: form.card_art };
         if (expiryDate) payload.expiry_date = expiryDate;
         if (isCredit) {
           if (form.credit_limit !== '') payload.credit_limit = parseFloat(form.credit_limit);
@@ -132,6 +135,7 @@ const CardModal = ({ isOpen, onClose, onSuccess, userId, accounts, card }) => {
           card_name: form.card_name.trim(),
           card_type: form.card_type,
           account_id: form.account_id,
+          card_art: form.card_art,
         };
         if (expiryDate) payload.expiry_date = expiryDate;
         if (isCredit) {
@@ -185,6 +189,28 @@ const CardModal = ({ isOpen, onClose, onSuccess, userId, accounts, card }) => {
                 className={errors.card_name ? 'error' : ''}
               />
               {errors.card_name && <span className="error-msg">{errors.card_name}</span>}
+            </div>
+
+            <div className="form-group">
+              <label>Arte de la tarjeta</label>
+              <div className="art-swatch-row">
+                {CARD_ARTS.map(art => (
+                  <button
+                    type="button"
+                    key={art.id}
+                    className={`art-swatch ${form.card_art === art.id ? 'selected' : ''}`}
+                    onClick={() => setForm(prev => ({ ...prev, card_art: art.id }))}
+                    title={art.label}
+                  >
+                    <span className="art-swatch-preview" style={{ background: art.colors[0] }}>
+                      <span style={{ background: art.colors[1] }} />
+                      <span style={{ background: art.colors[2] }} />
+                      <span style={{ background: art.colors[3] }} />
+                    </span>
+                    <span className="art-swatch-label">{art.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Tipo: solo editable al crear */}
@@ -458,6 +484,51 @@ const ModalContainer = styled.div`
   .error-msg {
     font-size: 0.8rem;
     color: #ef4444;
+  }
+
+  .art-swatch-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .art-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    &:hover { background: #f8fafc; }
+    &.selected {
+      border-color: #3b82f6;
+      background: #eff6ff;
+    }
+  }
+
+  .art-swatch-preview {
+    position: relative;
+    width: 56px;
+    height: 36px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+
+    span:nth-child(1) { position: absolute; width: 28px; height: 28px; border-radius: 50%; top: -10px; right: -8px; opacity: 0.95; }
+    span:nth-child(2) { position: absolute; width: 22px; height: 22px; border-radius: 50%; bottom: -8px; left: -6px; opacity: 0.85; }
+    span:nth-child(3) { position: absolute; width: 12px; height: 12px; border-radius: 50%; bottom: 4px; right: 6px; opacity: 0.9; }
+  }
+
+  .art-swatch-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6b7280;
   }
 
   .radio-group {

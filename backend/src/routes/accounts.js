@@ -40,12 +40,12 @@ router.put('/:accountId', async (req, res) => {
     try {
         logger.info('PUT /accounts/:accountId called');
         const accountId = req.params.accountId;
-        const { account_name, account_type } = req.body || {};
-        await accountService.updateAccount({ id: accountId, account_name, account_type });
+        const { account_name, account_type, account_art } = req.body || {};
+        await accountService.updateAccount({ id: accountId, account_name, account_type, account_art });
         return responseHandler.success(res, { message: 'Cuenta actualizada' });
     } catch (err) {
         logger.error('Error al actualizar cuenta', err);
-        const known = ['id es requerido', 'Sin campos para actualizar'];
+        const known = ['id es requerido', 'Sin campos para actualizar', 'account_art debe ser'];
         if (known.some(m => err.message?.includes(m))) return responseHandler.badRequest(res, err.message);
         return responseHandler.error(res, 'Error interno del servidor');
     }
